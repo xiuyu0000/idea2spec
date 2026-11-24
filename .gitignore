@@ -1,0 +1,5 @@
+# 本机说明（范例项目、依赖的本机位置），不进仓库
+local.md
+.DS_Store
+__pycache__/
+*.pyc

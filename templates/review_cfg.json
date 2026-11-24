@@ -1,0 +1,14 @@
+{
+  "PROJECT": "{{PROJECT_ID}}",
+  "ROUND": "R01",
+  "TOPIC": "【填写：本轮主题】",
+  "data": ["project.js", "data_r01.js"],
+  "codes": "codes.js",
+  "TP": "【填写：发出轮次，如 T03】",
+  "TF": "【填写：预计的反馈轮次，如 T04】",
+  "LEAD": "【填写：本轮导语（HTML）——这一轮讲什么、几张卡、哪几张要细看】",
+  "REVIEW_DIR": "interview/reviews",
+  "REVIEW_PATH_HINT": "{{FOLDER}}/interview/reviews",
+  "AGENDA_TITLE": "访谈议程：这一轮处理哪些议题",
+  "TCOND_TITLE": "访谈什么时候结束（终止条件）"
+}
