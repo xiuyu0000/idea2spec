@@ -1,5 +1,10 @@
 # 版本记录
 
+- **v1.2.0（2026-11-24）**：改为基于开源的审批台 [interactive-approval-desk](https://github.com/xiuyu0000/interactive-approval-desk) v3.7.1（MIT）。
+  - 安装与位置：README 写明把两个仓库克隆到同一个 skills 目录；`<desk>` 默认是本目录旁边的 `../interactive-approval-desk`（开源仓库的名字），脚本也认项目里固定版本的 `skills/interactive-approval-desk/` 和旧的文件夹名 `../approval_desk`；固定版本改为克隆开源仓库、固定在一个提交上。
+  - 按 v3.7.1 改写（v1.1.x 按的是当时还没发布的 3.7.2）：v3.7.1 的提交只马上重试一次，失败时页面请审批者把 Markdown 复制发过来，所以取回反馈时除了数据库和另存的 md，也看对话里贴的 Markdown，比较导出时间用最新的一份；教训第 25 条改为用 v3.7.1 时遇到的情形。
+  - 脚本：`status.py` 按版本号比较审批台，新了提示读 CHANGELOG 里新增的条目，旧了提示更新；`status.py`、`desk_codes.py` 找不到审批台时给出克隆命令。
+  - 改审批台本身（interview-rounds.md 第 8 节）：在开源仓库里改（没有推送权限就 fork 后提 PR，或提 issue）；公开文档里不写项目名和内部细节。
 - **v1.1.1（2026-11-24）**：加上 Apache-2.0 许可证（`LICENSE`），README 写明许可。
 - **v1.1.0（2026-11-24）**：适配审批台 interactive-approval-desk v3.7.2，并整理为公开仓库。
   - 审批台接口（`references/interview-rounds.md` 第 5 节）按审批台 v3.5 起的用法重写：模板和自检取自审批台，不再复制进项目；cfg 必须写 `PROJECT`；输出 `Rxx_<主题>_proposal.html` 与 `_artifact.html`；`test.js` 全部通过才发布；两遍的审批者冷读；发布时声明 `db` 和 `downloads`。

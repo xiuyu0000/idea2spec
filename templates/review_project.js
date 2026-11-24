@@ -1,4 +1,4 @@
-/* idea2spec · 每轮审批台共用的设置（按审批台 interactive-approval-desk v3.7.2 写）
+/* idea2spec · 每轮审批台共用的设置（按审批台 interactive-approval-desk v3.7.1 写；开源：https://github.com/xiuyu0000/interactive-approval-desk）
    cfg 的 data 写成 ["project.js", "data_rXX.js"]：本文件先拼进页面，每轮的数据文件在后。
    - TCOND 的说明按 D-001（用户批准的访谈终止条件）改写；
    - 每轮的数据文件里不要再用 const 声明 TCOND、TERMS：要加名词写 Object.assign(TERMS, {...})，

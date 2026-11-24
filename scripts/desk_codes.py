@@ -7,8 +7,9 @@
 按权威顺序收集项目里已有的文件（越权威越靠前；同一个代号以先出现的为准），没有的跳过：
   spec.md → 根目录其余的 *_contract.md（派生契约）→ interview/registry/decisions.md → open_items.md
   → sources.md → interview/INDEX.md → interview/reviews/INDEX.md → interview/reviews/*_feedback.md
-然后调用审批台的 scripts/build_codes.py。审批台按这个顺序找：--desk、<项目>/skills/interactive-approval-desk、
-本 skill 旁边的 ../approval_desk。本 skill 的编号都在审批台默认认得的形状里，一般不需要 --shapes。
+然后调用审批台（开源：https://github.com/xiuyu0000/interactive-approval-desk）的 scripts/build_codes.py。
+审批台按这个顺序找：--desk、<项目>/skills/interactive-approval-desk、本 skill 旁边的 ../interactive-approval-desk、
+../approval_desk（旧的文件夹名）。本 skill 的编号都在审批台默认认得的形状里，一般不需要 --shapes。
 """
 import argparse
 import subprocess
@@ -16,15 +17,16 @@ import sys
 from pathlib import Path
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
+DESK_REPO = "https://github.com/xiuyu0000/interactive-approval-desk"
 
 
 def find_desk(root, explicit=None):
     if explicit:  # 指定了就只认它，不悄悄换成别处的
         c = Path(explicit).expanduser()
         return c if (c / "scripts" / "build_codes.py").is_file() and (c / "round_template").is_dir() else None
-    cands = [root / "skills" / "interactive-approval-desk",
-              SKILL_DIR.parent / "approval_desk",
-              SKILL_DIR.parent / "interactive-approval-desk"]
+    cands = [root / "skills" / "interactive-approval-desk",      # 项目里固定版本的副本
+             SKILL_DIR.parent / "interactive-approval-desk",     # 和本 skill 装在同一个 skills 目录（开源仓库的名字）
+             SKILL_DIR.parent / "approval_desk"]                 # 旧的文件夹名
     for c in cands:
         if (c / "scripts" / "build_codes.py").is_file() and (c / "round_template").is_dir():
             return c
@@ -57,7 +59,10 @@ def main():
     if not desk:
         if a.desk:
             sys.exit(f"--desk 指定的 {a.desk} 不是审批台 skill（里面要有 scripts/build_codes.py 和 round_template/）")
-        sys.exit("找不到审批台 skill：用 --desk 指定它的目录（默认找 <项目>/skills/interactive-approval-desk、本 skill 旁边的 ../approval_desk）")
+        sys.exit("找不到审批台 skill（默认依次找 <项目>/skills/interactive-approval-desk、本 skill 旁边的 "
+                 "../interactive-approval-desk、../approval_desk）。先装：\n"
+                 f"  git clone {DESK_REPO} {SKILL_DIR.parent / 'interactive-approval-desk'}\n"
+                 "或用 --desk 指定已有的目录")
     files = sources(root)
     if not files:
         sys.exit("项目里还没有可以收集代号的文件（decisions.md 等）")

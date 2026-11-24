@@ -44,7 +44,7 @@
 - **decisions.md**（`templates/decisions.md`）：列"编号 / 决定 / 来源 / 状态"。决定写内容本身，单独读也能懂；来源写"Rxx-nn / Txx"或"Txx"；状态用：有效 / 有效（细节待 Rxx）/ 部分有效 / 有效（××部分已被 D-xxx 取代）/ 已被 D-xxx 取代 / 有效（经 CR-xxx 并入基线 vX.Y）。后续轮次把细节定下后，回头更新早先决定的状态。F 表列"编号 / 事实 / 来源"。
 - **open_items.md**（`templates/open_items.md`）：列"编号 / 议题 / 类型 / 所在审批轮 / 状态"。类型：实质性缺口、澄清、冲突、冷读发现、遗漏补全、推断、范围、新阶段、开工参数、假设、外部依赖假设。状态：待定（决定人、时机）/ 已定（D-xxx）/ 部分已答（…）/ 记录在案 / 取消（D-xxx）。进 spec §11、§13 的 A、Q 也要在这里登记（check_spec.py 会提示漏登）。
 - **sources.md**（`templates/sources.md`）：列"编号 / 来源 / 要点 / 置信 / 首次使用"；表头写核验日期。
-- **reviews/INDEX.md**（`templates/reviews_INDEX.md`）：列"审批轮 / 主题（条数、重发说明）/ 提案发出 / 反馈轮次 / 本地提案 / Artifact / 反馈文件（来源：数据库或用户另存的文件）/ 审批台版本 / 状态"；附取回反馈的步骤与构建、自检命令。
+- **reviews/INDEX.md**（`templates/reviews_INDEX.md`）：列"审批轮 / 主题（条数、重发说明）/ 提案发出 / 反馈轮次 / 本地提案 / Artifact / 反馈文件（来源：数据库、对话里贴的或用户另存的文件）/ 审批台版本 / 状态"；附取回反馈的步骤与构建、自检命令。
 - **INDEX.md**（`templates/INDEX.md`）：每轮更新"当前状态"和轮次表；目录有变化就更新地图。
 - **research/**：`Rxx_evidence.md`（`templates/evidence_Rxx.md`）、`coldread.md`（`templates/coldread.md`，所有轮次写在一个文件里）、`selfcheck.md`（`templates/selfcheck.md`）。
 

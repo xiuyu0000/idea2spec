@@ -11,21 +11,34 @@ import sys
 from pathlib import Path
 
 CLOSED = ("已定", "取消", "已取消", "记录在案", "已结案")
-DESK_VERSION = "3.7.2"  # 本 skill 按这个版本的审批台写；与 SKILL.md 依赖一节一致，适配新版时一起改
+DESK_VERSION = "3.7.1"  # 本 skill 按这个版本的审批台（开源版）写；与 SKILL.md 依赖一节一致，适配新版时一起改
+DESK_REPO = "https://github.com/xiuyu0000/interactive-approval-desk"
 SKILL_DIR = Path(__file__).resolve().parent.parent
+DESK_PLACES = "<项目>/skills/interactive-approval-desk、本 skill 旁边的 ../interactive-approval-desk、../approval_desk"
 
 
 def find_desk(root, explicit=None):
     if explicit:  # 指定了就只认它，不悄悄换成别处的
         c = Path(explicit).expanduser()
         return c if (c / "round_template" / "build.py").is_file() else None
-    cands = [root / "skills" / "interactive-approval-desk",
-              SKILL_DIR.parent / "approval_desk",
-              SKILL_DIR.parent / "interactive-approval-desk"]
+    cands = [root / "skills" / "interactive-approval-desk",      # 项目里固定版本的副本
+             SKILL_DIR.parent / "interactive-approval-desk",     # 和本 skill 装在同一个 skills 目录（开源仓库的名字）
+             SKILL_DIR.parent / "approval_desk"]                 # 旧的文件夹名
     for c in cands:
         if (c / "round_template" / "build.py").is_file():
             return c
     return None
+
+
+def vtuple(v):
+    """'3.7.1' → (3, 7, 1)；认不出时返回 None。"""
+    m = re.fullmatch(r"v?(\d+(?:\.\d+)*)", (v or "").strip())
+    if not m:
+        return None
+    t = [int(x) for x in m.group(1).split(".")]
+    while len(t) > 1 and t[-1] == 0:
+        t.pop()
+    return tuple(t)
 
 
 def read(p):
@@ -102,7 +115,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("project_dir")
     ap.add_argument("--spec", default="spec.md")
-    ap.add_argument("--desk", help="审批台 skill 的目录；默认找 <项目>/skills/interactive-approval-desk、本 skill 旁边的 ../approval_desk")
+    ap.add_argument("--desk", help=f"审批台 skill 的目录；默认依次找 {DESK_PLACES}")
     a = ap.parse_args()
     root = Path(a.project_dir).expanduser()
     iv = root / "interview"
@@ -204,14 +217,20 @@ def main():
     if desk:
         v = (read(desk / "VERSION") or "").strip() or "?"
         print(f"审批台：v{v}（{desk}）；本 skill 按 v{DESK_VERSION} 写")
-        if v != DESK_VERSION:
-            hints.append(f"审批台是 v{v}，本 skill 按 v{DESK_VERSION} 写：先读审批台 CHANGELOG.md 里更新的条目和 "
+        have, want = vtuple(v), vtuple(DESK_VERSION)
+        if have is None:
+            hints.append(f"认不出审批台的版本（{desk / 'VERSION'}）：确认它是 {DESK_REPO} 的克隆")
+        elif have > want:
+            hints.append(f"审批台 v{v} 比本 skill 按的 v{DESK_VERSION} 新：先读审批台 CHANGELOG.md 里 v{DESK_VERSION} 之后的条目和 "
                          "round_template/README.md 末尾的升级对照，按需调整 interview-rounds.md 第 4–6 节")
+        elif have < want:
+            hints.append(f"审批台 v{v} 比本 skill 按的 v{DESK_VERSION} 旧：先更新（git -C {desk} pull，或重新克隆 {DESK_REPO}）")
     else:
         if a.desk:
             print(f"审批台：--desk 指定的 {a.desk} 不是审批台 skill（里面没有 round_template/build.py）")
         else:
-            print("审批台：没找到（用 --desk 指定；默认找 <项目>/skills/interactive-approval-desk、本 skill 旁边的 ../approval_desk）")
+            print(f"审批台：没找到（默认依次找 {DESK_PLACES}）")
+            hints.append(f"装审批台：git clone {DESK_REPO} {SKILL_DIR.parent / 'interactive-approval-desk'}（或用 --desk 指定已有的目录）")
     build = iv / "reviews" / "build"
     missing = [n for n in ("project.js", "cfg_template.json") if not (build / n).exists()]
     if missing:

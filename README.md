@@ -22,13 +22,19 @@ A Claude skill (written in Chinese) that turns a product or software idea into a
 - 按需：派生阶段契约、交接清单 `HANDOFF.md`
 
 ## 安装
-- Claude Code：把仓库克隆到 `~/.claude/skills/idea2spec/`（本机所有项目可用），或项目里的 `.claude/skills/idea2spec/`。
-- 其他支持 Agent Skills 的客户端：按它的方式安装整个目录，入口是 `SKILL.md`。
+Claude Code：把两个仓库克隆到同一个 skills 目录，idea2spec 会在旁边找到审批台：
+
+```bash
+git clone https://github.com/xiuyu0000/idea2spec ~/.claude/skills/idea2spec
+git clone https://github.com/xiuyu0000/interactive-approval-desk ~/.claude/skills/interactive-approval-desk
+```
+
+只给一个项目用时，换成项目里的 `.claude/skills/`（两个同样并排）。其他支持 Agent Skills 的客户端：按它的方式安装这两个目录，入口都是 `SKILL.md`。
 
 依赖：
 - Python 3（`scripts/`）。
-- 审批台 skill **interactive-approval-desk**，另行安装，默认放在本目录旁边的 `../approval_desk`。本 skill 按它的 v3.7.2 写；没有审批台时，idea2spec 改用 Markdown 提案文件加对话提问。
-- Node 与 Playwright：审批台的自检要用。
+- 审批台 skill [interactive-approval-desk](https://github.com/xiuyu0000/interactive-approval-desk)（MIT），装在本目录旁边（`../interactive-approval-desk`）。本 skill 按它的 v3.7.1 写，`scripts/status.py` 会提示版本差异；没有审批台时，idea2spec 改用 Markdown 提案文件加对话提问。
+- Node 与 Playwright（带 Chromium）：审批台的自检要用。
 
 ## 用法
 在 Claude 里说"用 idea2spec 把这个想法梳理成 spec.md"，附上想法。推荐按三段写：`<problem>` 要解决什么、`<scene>` 场景与已有约束、`<requirements>` 对访谈的要求。Claude 先给出终止条件和议程请你确认，之后每轮发一个审批台：你填完点"提交反馈"，回到对话说"反馈完成"。

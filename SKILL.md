@@ -1,13 +1,13 @@
 ---
 name: idea2spec
-description: 把一个产品或软件想法，经"有依据的挑战式访谈 + 审批台逐轮审批 + 冷读与自检"，梳理成可直接交给 Claude Code 开发的需求契约 spec.md（项目级需求基线），并在基线之后管理变更、派生阶段契约与交接。用户想把想法、场景或需求描述变成 spec.md、需求契约、PRD 或规格说明，要求先访谈、质疑、挖掘需求；或要继续某个 interview/ 目录下的需求访谈（说"反馈完成"、追问某个审批条目、要改基线、要出原型或 MVP 契约）时使用。与 interactive-approval-desk（approval_desk）审批台 skill 配合使用。
+description: 把一个产品或软件想法，经"有依据的挑战式访谈 + 审批台逐轮审批 + 冷读与自检"，梳理成可直接交给 Claude Code 开发的需求契约 spec.md（项目级需求基线），并在基线之后管理变更、派生阶段契约与交接。用户想把想法、场景或需求描述变成 spec.md、需求契约、PRD 或规格说明，要求先访谈、质疑、挖掘需求；或要继续某个 interview/ 目录下的需求访谈（说"反馈完成"、追问某个审批条目、要改基线、要出原型或 MVP 契约）时使用。与开源的审批台 skill interactive-approval-desk 配合使用。
 ---
 
 # idea2spec：从一个想法到可用的需求契约
 
 这套做法来自一个内部平台的需求梳理（2026-11-06 至 11-15，对话 T01–T17，审批轮 R01–R08；下文称"首个项目"）：从一段想法出发，经 8 轮审批台、7 轮冷读，得到已批准基线 spec.md v1.2、已签署的交互原型契约和交接清单，交给 Claude Code 开发。
 
-下文 `<skill>` 指本 skill 所在目录；`<desk>` 指审批台 skill（interactive-approval-desk）所在目录，默认是和本 skill 并排的 `../approval_desk`；`<项目>` 指用户的项目文件夹。本目录里有 `local.md` 时先读它：它只在本机、不进仓库，写着本机的范例项目和依赖位置；拿不准格式时去范例项目看实物。
+下文 `<skill>` 指本 skill 所在目录；`<desk>` 指审批台 skill interactive-approval-desk（开源：https://github.com/xiuyu0000/interactive-approval-desk）所在目录，默认是和本 skill 并排的 `../interactive-approval-desk`（两个仓库都克隆进同一个 skills 目录时就是这样；脚本也认项目里固定版本的 `skills/interactive-approval-desk/` 和旧的文件夹名 `../approval_desk`）；`<项目>` 指用户的项目文件夹。本目录里有 `local.md` 时先读它：它只在本机、不进仓库，写着本机的范例项目和依赖位置；拿不准格式时去范例项目看实物。
 
 ## 产出
 - **spec.md**：需求契约——需求方、设计者、实现 Agent、独立验收者共同遵守的项目级需求基线。定义见 `references/contract-definition.md`（用户原文，方法的上游权威；与本 skill 其他内容冲突时以它为准）。
@@ -21,7 +21,7 @@ description: 把一个产品或软件想法，经"有依据的挑战式访谈 + 
 4. **白话。** 给用户看的一切用最直白的话；必要的专业词和代号在审批台上带悬浮解释。
 
 ## 依赖
-- **审批台**：interactive-approval-desk skill（`<desk>`）。本 skill 按它的 **v3.7.2** 写（这个版本号也写在 `scripts/status.py` 的 `DESK_VERSION`，适配新版时一起改），始终用最新版；每个需要用户批准的提案都用它生成审批台。第一次用之前读它的 `SKILL.md`、`round_template/README.md`（cfg 与数据的全部字段）和 `references/review-cards.md`（卡片怎么写）。`<desk>/VERSION` 不是 3.7.2 时（`status.py` 会提示），先读 `<desk>/CHANGELOG.md` 里更新的条目和 `round_template/README.md` 末尾的升级对照，再按需调整 `references/interview-rounds.md` 第 4–6 节。找不到审批台时问用户位置；用户同意不用审批台时，才改用 Markdown 提案文件加对话提问，提案与反馈照样落盘。
+- **审批台**：interactive-approval-desk skill（`<desk>`），开源在 https://github.com/xiuyu0000/interactive-approval-desk（MIT）。没装时，把它克隆到和本 skill 同一个 skills 目录：`git clone https://github.com/xiuyu0000/interactive-approval-desk ~/.claude/skills/interactive-approval-desk`（本 skill 装在别处时，克隆到它旁边）。每个需要用户批准的提案都用它生成审批台。本 skill 按它的开源版 **v3.7.1** 写（这个版本号也写在 `scripts/status.py` 的 `DESK_VERSION`，适配新版时一起改），用仓库里的最新版。第一次用之前读它的 `SKILL.md`、`round_template/README.md`（cfg 与数据的全部字段）和 `references/review-cards.md`（卡片怎么写）。`status.py` 会比较 `<desk>/VERSION`：比 3.7.1 新时，先读 `<desk>/CHANGELOG.md` 里 3.7.1 之后的条目和 `round_template/README.md` 末尾的升级对照，再按需调整 `references/interview-rounds.md` 第 4–6 节；比 3.7.1 旧时先更新审批台（`git -C <desk> pull`）。找不到审批台时问用户位置；用户同意不用审批台时，才改用 Markdown 提案文件加对话提问，提案与反馈照样落盘。
 - **自检环境**：审批台的自检 `test.js` 和冷读材料 `dumptext.js` 要用 Node 和装有 Playwright 的 `node_modules`（用 `NODE_PATH` 指过去）；没有就先装，自检不能跳过。
 - **子 Agent**：冷读要启动只读契约文件的独立子 Agent（终止条件 T7 的规定，用户批准终止条件即同意这种做法）；审批台发布前的审批者冷读也交给子 Agent。
 - **文件访问**：会话要能读写项目文件夹，并能读本 skill 目录与 `<desk>`；在桌面应用里就是把这几个文件夹都连接到会话。取回反馈时可能要看"下载"文件夹，那需要用户另外授权。
@@ -59,7 +59,7 @@ description: 把一个产品或软件想法，经"有依据的挑战式访谈 + 
 5. 回复用户：这一轮讲什么、几条、哪几条需要细看；请用户填完点"提交反馈"后说"反馈完成"。本轮到此结束，不替用户作答。
 
 **收到"反馈完成"**
-1. 取回反馈：读该轮 Artifact 数据库 `feedback/Rxx` 的 md，同时找 `interview/reviews/` 和"下载"文件夹里用户另存的 `Rxx_<主题>_feedback*.md`（网络不好时页面会请用户另存一份），比较"导出时间"，把最新的一份原样写成 `interview/reviews/Rxx_<主题>_feedback.md`，并告诉用户用的是哪一份（`references/interview-rounds.md` 第 6 节）。
+1. 取回反馈：读该轮 Artifact 数据库 `feedback/Rxx` 的 md；同时看用户贴在对话里的 Markdown（页面提交失败时说"没有提交成功"，请审批者把 Markdown 复制发过来）和另存的 `Rxx_<主题>_feedback*.md`（`interview/reviews/`、"下载"文件夹），比较"导出时间"，把最新的一份原样写成 `interview/reviews/Rxx_<主题>_feedback.md`，并告诉用户用的是哪一份（`references/interview-rounds.md` 第 6 节）。
 2. 逐条处理（规则表见 interview-rounds.md 第 6 节）：批准 → D；评论里的事实 → F；只写评论没选选项 → 以评论为准记 D 并注明；勾选与评论对不上、评论与已批准决定冲突 → 记 Q，下一轮问，不自行调和；未答的填写项 → 留在议程；评论带出的新能力 → 下一轮提议，不自行加入范围。
 3. 收尾（见下方清单）。
 4. 判断：实质性议程都已定（或已有假设/待决安排）→ 阶段 3；否则发下一轮。
@@ -86,7 +86,7 @@ description: 把一个产品或软件想法，经"有依据的挑战式访谈 + 
 - [ ] `registry/decisions.md`：新增 D、F；被取代的标注
 - [ ] `registry/open_items.md`：新增或更新 Q、A（进 spec §11、§13 的也要登记）
 - [ ] `registry/sources.md`：新来源 S
-- [ ] `reviews/INDEX.md`：本轮提案、Artifact 链接、反馈文件及其来源（数据库 / 用户另存的文件）、审批台版本、轮次
+- [ ] `reviews/INDEX.md`：本轮提案、Artifact 链接、反馈文件及其来源（数据库 / 对话里贴的 / 用户另存的文件）、审批台版本、轮次
 - [ ] `INDEX.md`：当前状态、轮次表
 - [ ] spec 有改动：版本号、修订记录、快照与对比
 - [ ] `python3 <skill>/scripts/status.py <项目>` 核对编号、待决与审批台版本
@@ -102,7 +102,7 @@ description: 把一个产品或软件想法，经"有依据的挑战式访谈 + 
 - 用户说"默认可行"的外部条件，记为假设，并写不成立时系统怎么表现。
 - 基线之后的研发安排与派生契约的权限，在 §0.5 一开始就写好，否则得事后改基线（首个项目 CR-002 ①②）。
 - 冷读子 Agent 不能读访谈记录，否则会用背景知识补上文档的空白。
-- 审批台：不预填任何答案；发布后条目含义变了要升 `KEY`；"反馈完成"时数据库可能是空的或旧的，先找用户另存的 md、比较导出时间；`test.js` 没通过不发布（这些规则审批台已内置，保持最新版）。
+- 审批台：不预填任何答案；发布后条目含义变了要升 `KEY`；`test.js` 没通过不发布（这几条审批台已内置，用它的最新版）。"反馈完成"时数据库可能是空的或旧的：网络一断，v3.7.1 的提交就会失败，页面请审批者把 Markdown 复制发过来；所以先看对话里贴的和另存的 md，比较导出时间，不要一上来就请用户重填。
 
 ## 文件
 - `references/contract-definition.md`：需求契约定义（用户原文）

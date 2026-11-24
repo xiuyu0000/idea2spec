@@ -1,6 +1,6 @@
 # 访谈轮：选题、质疑、挖掘、条目、审批台、反馈
 
-`<desk>` 指审批台 skill（interactive-approval-desk）所在目录，本节按它的 v3.7.2 写。审批台自己的规则（字段形状、字数上限、自检项目）以它的 `round_template/README.md` 和 `references/` 为准；这里只写访谈怎么用它。
+`<desk>` 指审批台 skill interactive-approval-desk（开源：https://github.com/xiuyu0000/interactive-approval-desk）所在目录，本节按它的 v3.7.1 写。审批台自己的规则（字段形状、字数上限、自检项目）以它的 `round_template/README.md` 和 `references/` 为准；这里只写访谈怎么用它。
 
 ## 1 一轮的节奏
 - 一轮 = Claude 在对话轮 Txx 发出审批台 Rxx → 用户填写、提交，说"反馈完成"（下一个对话轮）→ Claude 处理反馈，发出下一轮。
@@ -53,7 +53,7 @@
 - **推荐不是默认。** 多选一要有推荐并写理由，但页面不预填任何答案。
 
 ## 5 与审批台的接口
-构建目录是 `interview/reviews/build/`，里面只放这一轮的 cfg、数据和代号表；模板、导出模块和自检都取自 `<desk>`，不复制进项目。（项目要固定审批台的版本时，可以把整个审批台 skill 复制到项目里的 `skills/interactive-approval-desk/`，`<desk>` 就指那份副本；不要复制它的 `archive/`。）
+构建目录是 `interview/reviews/build/`，里面只放这一轮的 cfg、数据和代号表；模板、导出模块和自检都取自 `<desk>`，不复制进项目。（项目要固定审批台的版本时，把开源仓库克隆到项目里并固定在一个提交上：`git clone https://github.com/xiuyu0000/interactive-approval-desk skills/interactive-approval-desk`，再 `git -C skills/interactive-approval-desk checkout <提交号>`；`<desk>` 就指这份副本，本 skill 的脚本先找它。）
 
 1. **共用设置**（`init_interview.py` 已生成）：
    - `project.js`：每轮相同的数据——终止条件 `TCOND`（按 D-001 改写说明）、常用名词 `TERMS`、正文里会出现但代号表认不出的代号（T1–T7、AC1…）的解释。
@@ -72,9 +72,9 @@
 ## 6 处理反馈
 **取回**（用户说"反馈完成"后）：
 1. 读该轮 Artifact 数据库 `feedback/Rxx` 的 md 字段。
-2. 同时找 `interview/reviews/` 和"下载"文件夹里用户另存的 `Rxx_<主题>_feedback*.md`。页面连不上数据库时会说"没有提交成功"，请用户另存一份或复制；所以数据库里可能什么都没有，也可能是更早的一次提交。"下载"文件夹要用户授权才能看；没有授权时，请用户把文件放进 `interview/reviews/`。
-3. 比较每份的"- 导出时间："一行，把最新的一份原样写成 `interview/reviews/Rxx_<主题>_feedback.md`；那里已有更新的文件时不覆盖。在 `reviews/INDEX.md` 写明用的是哪一份，并告诉用户。
-4. 都没有：数据库 `drafts/Rxx` 里是用户的进度和半成品 md，只能用来看进度，不能当反馈（实在要用，先跟用户说清楚）；请用户回到页面再点一次"提交反馈"，或另存一份。
+2. 同时看另外两种来源。一是用户贴在对话里的 Markdown：页面提交失败时（网络断断续续也会，v3.7.1 只马上重试一次）说"没有提交成功"，选中下方的 Markdown，请审批者复制发过来。二是用户另存的 `Rxx_<主题>_feedback*.md`：页面上的"💾 另存一份 md 到本机"（发布时声明了 `downloads`），或本地打开的页面写进选定文件夹、下载的文件，多在 `interview/reviews/` 或"下载"文件夹。所以数据库里可能什么都没有，也可能是更早的一次提交。"下载"文件夹要用户授权才能看；没有授权时，请用户把文件放进 `interview/reviews/`。
+3. 比较每份的"- 导出时间："一行，把最新的一份原样写成 `interview/reviews/Rxx_<主题>_feedback.md`；那里已有更新的文件时不覆盖。在 `reviews/INDEX.md` 写明用的是哪一份（数据库 / 对话里贴的 / 另存的文件），并告诉用户。
+4. 都没有：数据库 `drafts/Rxx` 里是用户的进度和半成品 md，只能用来看进度，不能当反馈（实在要用，先跟用户说清楚）；请用户回到页面再点一次"提交反馈"，或复制 Markdown 发过来、另存一份。
 
 反馈文件每条有：状态（✅ 通过 / 🤔 待微调 / ❌ 需修改 / 未表态）、所选选项、分组卡的逐点表态（同意 / 要调整 / 不同意，各带说明）、填写的内容、评论。用了简报、图、对象写法选项的卡，md 里还有简报、图的文字版、选项的好处与代价等几行：那是提案内容，不是用户的回答。处理规则：
 
@@ -107,7 +107,7 @@
 
 ## 8 改审批台本身
 用户对审批台的呈现提意见（代号看不懂、表格捆绑、默认同意、字太多、沙盘不见了……）时，改审批台 skill，而不是只改当前页：
-- 审批台用 git 管理版本：在它的 `round_template/`（唯一的模板）、`assets/` 或 `references/` 里改，`VERSION` 升一号，`CHANGELOG.md` 写清改了什么和起因，`round_template/README.md` 末尾补升级对照；用 `round_template/sample/` 的两轮和当前轮重建并跑 `test.js`，都通过再提交。项目需要模板表达不了的东西时，同样改在审批台里，不在项目里改模板的副本。
+- 审批台开源在 https://github.com/xiuyu0000/interactive-approval-desk（MIT），用 git 管理版本：有推送权限就在本地克隆里改，没有就 fork 后改、提 PR，或在仓库里提 issue。改在它的 `round_template/`（唯一的模板）、`assets/` 或 `references/` 里，`VERSION` 升一号，`CHANGELOG.md` 写清改了什么和起因，`round_template/README.md` 末尾补升级对照；用 `round_template/sample/` 的两轮和当前轮重建并跑 `test.js`，都通过再提交、推送。仓库是公开的，起因里不写项目名和内部细节（它的文档用 project A、project B 代称）。项目需要模板表达不了的东西时，同样改在审批台里，不在项目里改模板的副本。
 - 理解不确定的地方先问（首个项目 T15 用选择题确认了表态方式、卡片内容、浏览方式和改动范围）。
 - 已完成的线上页面不必改；未完成的轮重建后在原链接重新发布，条目含义变了换 `KEY`。
-- 改完看本 skill 要不要跟着改：`SKILL.md` 的依赖一节、本文第 4–6 节、`scripts/status.py` 的 `DESK_VERSION`。
+- 改完看本 skill 要不要跟着改：`SKILL.md` 的依赖一节、本文第 4–6 节、`scripts/status.py` 的 `DESK_VERSION`、`README.md` 的依赖一节。
