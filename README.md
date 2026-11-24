@@ -55,3 +55,6 @@ python3 scripts/snapshot_spec.py <项目> --version v1.0
 
 ## 来历
 这套做法来自 2026 年 11 月一个内部平台的需求梳理：一段想法，经 8 轮审批台、7 轮冷读，得到已批准的基线 spec.md、签署的交互原型契约和交接清单。版本记录见 [CHANGELOG.md](CHANGELOG.md)。
+
+## 许可
+Apache License 2.0，见 [LICENSE](LICENSE)。

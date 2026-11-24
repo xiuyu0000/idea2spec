@@ -1,5 +1,6 @@
 # 版本记录
 
+- **v1.1.1（2026-11-24）**：加上 Apache-2.0 许可证（`LICENSE`），README 写明许可。
 - **v1.1.0（2026-11-24）**：适配审批台 interactive-approval-desk v3.7.2，并整理为公开仓库。
   - 审批台接口（`references/interview-rounds.md` 第 5 节）按审批台 v3.5 起的用法重写：模板和自检取自审批台，不再复制进项目；cfg 必须写 `PROJECT`；输出 `Rxx_<主题>_proposal.html` 与 `_artifact.html`；`test.js` 全部通过才发布；两遍的审批者冷读；发布时声明 `db` 和 `downloads`。
   - 卡片设计（第 4 节）按 v3.7、v3.7.1：先定沙盘，不做就写 `NO_SANDBOX`；需要细看的卡用简报四格；按数据画图；选项两边都写；改动写成对照式的点；页面速览 `BRIEF`；`PREV` 的状态列。
